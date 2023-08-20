@@ -463,6 +463,21 @@ void NotificationProcessor::process_on_queue_deadlock_event(
     sendNotification(SAI_SWITCH_NOTIFICATION_NAME_QUEUE_PFC_DEADLOCK, s);
 }
 
+
+void NotificationProcessor::process_on_port_host_tx_ready_change(
+        _In_ sai_object_id_t port_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_port_host_tx_ready_status_t *host_tx_ready_status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside process_on_port_host_tx_ready_change function");
+
+    std::string s = sai_serialize_port_host_tx_ready_ntf(port_id, switch_id, host_tx_ready_status);
+
+    sendNotification(SAI_SWITCH_NOTIFICATION_NAME_PORT_HOST_TX_READY, s);
+}
+
+
 void NotificationProcessor::process_on_port_state_change(
         _In_ uint32_t count,
         _In_ sai_port_oper_status_notification_t *data)
@@ -626,6 +641,23 @@ void NotificationProcessor::handle_port_state_change(
     sai_deserialize_free_port_oper_status_ntf(count, portoperstatus);
 }
 
+void NotificationProcessor::handle_port_host_tx_ready_change(
+        _In_ const std::string &data)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside handle_port_host_tx_ready_change function");
+
+    sai_object_id_t port_id;
+    sai_object_id_t switch_id;
+    sai_port_host_tx_ready_status_t *host_tx_ready_status = NULL;
+
+    sai_deserialize_port_host_tx_ready_ntf(data, port_id, switch_id, host_tx_ready_status);
+
+    process_on_port_host_tx_ready_change(port_id, switch_id, host_tx_ready_status);
+
+    sai_deserialize_free_port_host_tx_ready_ntf(host_tx_ready_status);
+}
+
 void NotificationProcessor::handle_bfd_session_state_change(
         _In_ const std::string &data)
 {
@@ -684,6 +716,10 @@ void NotificationProcessor::syncProcessNotification(
     else if (notification == SAI_SWITCH_NOTIFICATION_NAME_PORT_STATE_CHANGE)
     {
         handle_port_state_change(data);
+    }
+    else if (notification == SAI_SWITCH_NOTIFICATION_NAME_PORT_HOST_TX_READY)
+    {
+        handle_port_host_tx_ready_change(data);
     }
     else if (notification == SAI_SWITCH_NOTIFICATION_NAME_SWITCH_SHUTDOWN_REQUEST)
     {

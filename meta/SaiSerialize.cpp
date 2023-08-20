@@ -1089,6 +1089,15 @@ std::string sai_serialize_switch_oper_status(
     return j.dump();
 }
 
+std::string sai_serialize_port_host_tx_ready_status(
+        _In_ const sai_port_host_tx_ready_status_t status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside sai_serialize_port_host_tx_ready_status function");
+
+    return sai_serialize_enum(status, &sai_metadata_enum_sai_port_host_tx_ready_status_t);
+}
+
 std::string sai_serialize_ingress_drop_reason(
         _In_ const sai_in_drop_reason_t reason)
 {
@@ -2104,6 +2113,14 @@ std::string sai_serialize_port_oper_status(
     return sai_serialize_enum(status, &sai_metadata_enum_sai_port_oper_status_t);
 }
 
+std::string sai_serialize_port_host_tx_ready(
+        _In_ sai_port_host_tx_ready_status_t host_tx_ready_status)
+{
+    SWSS_LOG_ENTER();
+
+    return sai_serialize_enum(host_tx_ready_status, &sai_metadata_enum_sai_port_host_tx_ready_status_t);
+}
+
 std::string sai_serialize_queue_deadlock_event(
         _In_ sai_queue_pfc_deadlock_event_type_t event)
 {
@@ -2261,6 +2278,34 @@ std::string sai_serialize_port_oper_status_ntf(
     // we don't need count since it can be deduced
     return j.dump();
 }
+
+
+std::string sai_serialize_port_host_tx_ready_ntf(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_id_t port_id,
+        _In_ sai_port_host_tx_ready_status_t host_tx_ready_status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside sai_serialize_port_host_tx_ready_ntf function");
+
+    // if (host_tx_ready_status == NULL)
+    // {
+    //     SWSS_LOG_THROW("host_tx_ready_status pointer is null");
+    // }
+
+    json j = json::array();
+    json item;
+
+    item["port_id"] = sai_serialize_object_id(port_id);
+    item["switch_id"] = sai_serialize_object_id(switch_id);
+    // item["host_tx_ready_status"] = sai_serialize_port_host_tx_ready(host_tx_ready_status);
+    item["host_tx_ready_status"] = sai_serialize_port_host_tx_ready_status(host_tx_ready_status);
+
+    j.push_back(item);
+
+    return j.dump();
+}
+
 
 std::string sai_serialize_queue_deadlock_ntf(
         _In_ uint32_t count,
@@ -3882,6 +3927,16 @@ void sai_deserialize_port_oper_status(
     sai_deserialize_enum(s, &sai_metadata_enum_sai_port_oper_status_t, (int32_t&)status);
 }
 
+void sai_deserialize_port_host_tx_ready_status(
+        _In_ const std::string& s,
+        _Out_ sai_port_host_tx_ready_status_t& status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside sai_deserialize_port_host_tx_ready_status function");
+
+    sai_deserialize_enum(s, &sai_metadata_enum_sai_port_host_tx_ready_status_t, (int32_t&)status);
+}
+
 void sai_deserialize_queue_deadlock(
         _In_ const std::string& s,
         _Out_ sai_queue_pfc_deadlock_event_type_t& event)
@@ -4584,6 +4639,25 @@ void sai_deserialize_port_oper_status_ntf(
     *port_oper_status = data;
 }
 
+void sai_deserialize_port_host_tx_ready_ntf(
+        _In_ const std::string& s,
+        _Out_ sai_object_id_t& port_id,
+        _Out_ sai_object_id_t& switch_id,
+        _Out_ sai_port_host_tx_ready_status_t *host_tx_ready_status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside sai_deserialize_port_host_tx_ready_ntf function");
+
+    json j = json::parse(s);
+
+    sai_deserialize_object_id(j["port_id"], port_id);
+
+    sai_deserialize_object_id(j["switch_id"], switch_id);
+
+    sai_deserialize_port_host_tx_ready_status(j["host_tx_ready"], *host_tx_ready_status);
+}
+
+
 void sai_deserialize_queue_deadlock_ntf(
         _In_ const std::string& s,
         _Out_ uint32_t &count,
@@ -4870,6 +4944,15 @@ void sai_deserialize_free_port_oper_status_ntf(
     SWSS_LOG_ENTER();
 
     delete[] port_oper_status;
+}
+
+void sai_deserialize_free_port_host_tx_ready_ntf(
+        _In_ sai_port_host_tx_ready_status_t* host_tx_ready_status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside sai_deserialize_free_port_host_tx_ready_ntf function");
+
+    delete[] host_tx_ready_status;
 }
 
 void sai_deserialize_free_queue_deadlock_ntf(
