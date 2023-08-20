@@ -463,6 +463,39 @@ void NotificationProcessor::process_on_queue_deadlock_event(
     sendNotification(SAI_SWITCH_NOTIFICATION_NAME_QUEUE_PFC_DEADLOCK, s);
 }
 
+
+void NotificationProcessor::process_on_port_host_tx_ready_change(
+        _In_ sai_object_id_t port_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_port_host_tx_ready_status_t *host_tx_ready_status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside process_on_port_host_tx_ready_change function");
+    
+    // sai_object_id_t rid = port_id;
+    // SWSS_LOG_INFO("Port RID %s host tx ready change notification",
+    //             sai_serialize_object_id(rid).c_str());
+    SWSS_LOG_ERROR("NOA before translate from rid to vid - port is is now 0x%lx", port_id);
+
+    // if (m_translator->tryTranslateRidToVid(rid, port_id) == false)
+    // {
+    //     SWSS_LOG_ERROR("NOA failed to translate rid to vid");
+    //     SWSS_LOG_WARN("Port RID %s transalted to null VID!!!", sai_serialize_object_id(rid).c_str());
+    // }
+
+    sai_object_id_t port_vid = m_translator->translateRidToVid(port_id, SAI_NULL_OBJECT_ID);
+    SWSS_LOG_ERROR("NOA after translate from rid to vid - port vid is now 0x%lx", port_vid);
+    sai_object_id_t switch_vid = m_translator->translateRidToVid(switch_id, SAI_NULL_OBJECT_ID);
+    SWSS_LOG_ERROR("NOA after translate from rid to vid - switch vid is now 0x%lx", switch_vid);
+    
+    std::string s = sai_serialize_port_host_tx_ready_ntf(port_vid, switch_vid, *host_tx_ready_status);
+
+    SWSS_LOG_ERROR("NOA after sai_serialize inside process_on_port_host_tx_ready_change. s = %s", s.c_str());
+
+    sendNotification(SAI_SWITCH_NOTIFICATION_NAME_PORT_HOST_TX_READY, s);
+}
+
+
 void NotificationProcessor::process_on_port_state_change(
         _In_ uint32_t count,
         _In_ sai_port_oper_status_notification_t *data)
@@ -626,6 +659,27 @@ void NotificationProcessor::handle_port_state_change(
     sai_deserialize_free_port_oper_status_ntf(count, portoperstatus);
 }
 
+void NotificationProcessor::handle_port_host_tx_ready_change(
+        _In_ const std::string &data)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside handle_port_host_tx_ready_change function");
+
+    sai_object_id_t port_id;
+    sai_object_id_t switch_id;
+    // sai_port_host_tx_ready_status_t *host_tx_ready_status = NULL;
+    sai_port_host_tx_ready_status_t host_tx_ready_status;
+    SWSS_LOG_ERROR("NOA port_id before deserialize is %d", port_id);
+    SWSS_LOG_ERROR("NOA switch_id before deserialize is %d", switch_id);
+    SWSS_LOG_ERROR("NOA host_tx_ready_status before deserialize is %d", host_tx_ready_status);
+
+    sai_deserialize_port_host_tx_ready_ntf(data, port_id, switch_id, host_tx_ready_status);
+
+    process_on_port_host_tx_ready_change(port_id, switch_id, &host_tx_ready_status);
+
+    sai_deserialize_free_port_host_tx_ready_ntf(host_tx_ready_status);
+}
+
 void NotificationProcessor::handle_bfd_session_state_change(
         _In_ const std::string &data)
 {
@@ -684,6 +738,10 @@ void NotificationProcessor::syncProcessNotification(
     else if (notification == SAI_SWITCH_NOTIFICATION_NAME_PORT_STATE_CHANGE)
     {
         handle_port_state_change(data);
+    }
+    else if (notification == SAI_SWITCH_NOTIFICATION_NAME_PORT_HOST_TX_READY)
+    {
+        handle_port_host_tx_ready_change(data);
     }
     else if (notification == SAI_SWITCH_NOTIFICATION_NAME_SWITCH_SHUTDOWN_REQUEST)
     {

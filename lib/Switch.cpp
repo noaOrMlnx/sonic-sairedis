@@ -118,6 +118,13 @@ void Switch::updateNotifications(
                     (sai_bfd_session_state_change_notification_fn)attr.value.ptr;
                 break;
 
+            case SAI_SWITCH_ATTR_PORT_HOST_TX_READY_NOTIFY:
+                SWSS_LOG_ERROR("NOA in Switch.cpp case-switch, host tx ready");
+                m_switchNotifications.on_port_host_tx_ready =
+                    (sai_port_host_tx_ready_notification_fn)attr.value.ptr;
+		break;
+
+
             default:
                 SWSS_LOG_ERROR("pointer for %s is not handled, FIXME!", meta->attridname);
                 break;
