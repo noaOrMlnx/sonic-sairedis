@@ -6421,6 +6421,44 @@ void Meta::meta_sai_on_nat_event(
     }
 }
 
+void Meta::meta_sai_on_port_host_tx_ready_change(
+                    _In_ sai_object_id_t port_id,
+                    _In_ sai_object_id_t switch_id,
+                    _In_ sai_port_host_tx_ready_status_t host_tx_ready_status)
+{
+    SWSS_LOG_ENTER();
+    SWSS_LOG_ERROR("NOA inside Meta::meta_sai_on_port_host_tx_ready_change function");
+
+    if (!sai_metadata_get_enum_value_name(
+            &sai_metadata_enum_sai_port_host_tx_ready_status_t,
+            host_tx_ready_status))
+    {
+        SWSS_LOG_WARN("port host_tx_ready value (%d) not found in sai_port_host_tx_ready_status_t",
+                host_tx_ready_status);
+    }
+
+    auto ot = objectTypeQuery(port_id);
+
+    switch (ot)
+    {
+        case SAI_OBJECT_TYPE_PORT:
+        // case SAI_OBJECT_TYPE_BRIDGE_PORT:
+        // case SAI_OBJECT_TYPE_LAG:
+            break;
+
+        default:
+            SWSS_LOG_ERROR("port_id %s has unexpected type: %s, expected PORT", //, BRIDGE_PORT or LAG
+                    sai_serialize_object_id(port_id).c_str(),
+                    sai_serialize_object_type(ot).c_str());
+            break;
+    }
+
+    // NOA TODO finish this function
+
+}
+
+
+
 void Meta::meta_sai_on_switch_state_change(
         _In_ sai_object_id_t switch_id,
         _In_ sai_switch_oper_status_t switch_oper_status)
