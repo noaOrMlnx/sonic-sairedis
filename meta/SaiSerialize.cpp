@@ -2300,6 +2300,9 @@ std::string sai_serialize_port_host_tx_ready_ntf(
     item["switch_id"] = sai_serialize_object_id(switch_id);
     // item["host_tx_ready_status"] = sai_serialize_port_host_tx_ready(host_tx_ready_status);
     item["host_tx_ready_status"] = sai_serialize_port_host_tx_ready_status(host_tx_ready_status);
+    SWSS_LOG_ERROR("NOA after status serialize %s", item["host_tx_ready_status"]);
+    SWSS_LOG_ERROR("NOA after status serialize");
+    // SWSS_LOG_ERROR("NOA json item after serialize is: %s", item.to_string());
 
     j.push_back(item);
 
@@ -4643,20 +4646,41 @@ void sai_deserialize_port_host_tx_ready_ntf(
         _In_ const std::string& s,
         _Out_ sai_object_id_t& port_id,
         _Out_ sai_object_id_t& switch_id,
-        _Out_ sai_port_host_tx_ready_status_t *host_tx_ready_status)
+        _Out_ sai_port_host_tx_ready_status_t& host_tx_ready_status)
 {
     SWSS_LOG_ENTER();
     SWSS_LOG_ERROR("NOA inside sai_deserialize_port_host_tx_ready_ntf function");
 
-    json j = json::parse(s);
+    SWSS_LOG_ERROR("NOA before json::parse");
+    json j;
+    try {
+        j = json::parse(s);
+    }
+    catch (const std::exception&)
+    {
+        SWSS_LOG_ERROR("NOA catched an exception after json::parse");
+        return;
+    }
+    SWSS_LOG_ERROR("NOA after json::parse");
 
-    sai_deserialize_object_id(j["port_id"], port_id);
+    auto count = (uint32_t)j.size();
+    SWSS_LOG_ERROR("NOA json size is %d", count);
 
-    sai_deserialize_object_id(j["switch_id"], switch_id);
+    SWSS_LOG_ERROR("NOA before port id deserialize");
+    sai_deserialize_object_id(j[0]["port_id"], port_id);
+    SWSS_LOG_ERROR("NOA after port id deserialize");
 
-    sai_deserialize_port_host_tx_ready_status(j["host_tx_ready"], *host_tx_ready_status);
+    SWSS_LOG_ERROR("NOA before switch id deserialize");
+    sai_deserialize_object_id(j[0]["switch_id"], switch_id);
+    SWSS_LOG_ERROR("NOA after switch id deserialize");
+
+    SWSS_LOG_ERROR("NOA before status deserialize %s", j[0]["host_tx_ready_status"]);
+    SWSS_LOG_ERROR("NOA before status deserialize");
+
+    
+    sai_deserialize_port_host_tx_ready_status(j[0]["host_tx_ready_status"], host_tx_ready_status);
+    SWSS_LOG_ERROR("NOA after status deserialize");
 }
-
 
 void sai_deserialize_queue_deadlock_ntf(
         _In_ const std::string& s,
@@ -4947,12 +4971,12 @@ void sai_deserialize_free_port_oper_status_ntf(
 }
 
 void sai_deserialize_free_port_host_tx_ready_ntf(
-        _In_ sai_port_host_tx_ready_status_t* host_tx_ready_status)
+        _In_ sai_port_host_tx_ready_status_t host_tx_ready_status)
 {
     SWSS_LOG_ENTER();
     SWSS_LOG_ERROR("NOA inside sai_deserialize_free_port_host_tx_ready_ntf function");
 
-    delete[] host_tx_ready_status;
+    // delete[] host_tx_ready_status;
 }
 
 void sai_deserialize_free_queue_deadlock_ntf(

@@ -31,7 +31,7 @@ NotificationPortHostTxReady::NotificationPortHostTxReady(
 NotificationPortHostTxReady::~NotificationPortHostTxReady()
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside ~NotificationPortHostTxReady desstructor");
+    SWSS_LOG_ERROR("NOA inside ~NotificationPortHostTxReady destructor");
 
     sai_deserialize_free_port_host_tx_ready_ntf(m_portHostTxReadyStatus);
 }
@@ -54,12 +54,19 @@ sai_object_id_t NotificationPortHostTxReady::getAnyObjectId() const
     SWSS_LOG_ENTER();
     SWSS_LOG_ERROR("NOA inside NotificationPortHostTxReady::getAnyObjectId function");
 
-    // if (m_portId == nullptr)
-    // {
-    //     return SAI_NULL_OBJECT_ID;
-    // }
-
-    return m_portId;
+    if (m_switchId != SAI_NULL_OBJECT_ID)
+    {
+        SWSS_LOG_ERROR("NOA return m_switchId");
+        return m_switchId;
+    }
+    if (m_portId != SAI_NULL_OBJECT_ID)
+    {
+        SWSS_LOG_ERROR("NOA return m_portId");
+        return m_portId;
+    }
+    SWSS_LOG_ERROR("NOA return null object id");
+    
+    return SAI_NULL_OBJECT_ID;
 }
 
 void NotificationPortHostTxReady::processMetadata(
@@ -68,7 +75,9 @@ void NotificationPortHostTxReady::processMetadata(
     SWSS_LOG_ENTER();
     SWSS_LOG_ERROR("NOA inside NotificationPortHostTxReady::processMetadata function");
 
-    meta->meta_sai_on_port_host_tx_ready_change(m_portId, m_switchId, *m_portHostTxReadyStatus);
+    SWSS_LOG_ERROR("NOA before calling meta_sai_on_port_host_tx_ready_change, m_portHostTxReadyStatus = %d", m_portHostTxReadyStatus);
+    meta->meta_sai_on_port_host_tx_ready_change(m_portId, m_switchId, m_portHostTxReadyStatus);
+    SWSS_LOG_ERROR("NOA after meta_sai_on_port_host_tx_ready_change, m_portHostTxReadyStatus = %d", m_portHostTxReadyStatus);
 }
 
 void NotificationPortHostTxReady::executeCallback(
@@ -79,6 +88,6 @@ void NotificationPortHostTxReady::executeCallback(
 
     if (switchNotifications.on_port_host_tx_ready)
     {
-        switchNotifications.on_port_host_tx_ready(m_portId, m_switchId, *m_portHostTxReadyStatus);
+        switchNotifications.on_port_host_tx_ready(m_portId, m_switchId, m_portHostTxReadyStatus);
     }
 }

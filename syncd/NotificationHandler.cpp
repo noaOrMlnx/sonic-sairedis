@@ -168,7 +168,7 @@ void NotificationHandler::onPortStateChange(
     enqueueNotification(SAI_SWITCH_NOTIFICATION_NAME_PORT_STATE_CHANGE, s);
 }
 
-void NotificationHandler::onPortHostTxReadyChange(
+void NotificationHandler::onPortHostTxReady(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_id_t port_id,
         _In_ sai_port_host_tx_ready_status_t host_tx_ready_status)
@@ -179,7 +179,7 @@ void NotificationHandler::onPortHostTxReadyChange(
 
     auto s = sai_serialize_port_host_tx_ready_ntf(switch_id, port_id, host_tx_ready_status);
 
-    enqueueNotification(SAI_SWITCH_NOTIFICATION_TYPE_PORT_HOST_TX_READY, s);
+    enqueueNotification(SAI_SWITCH_NOTIFICATION_NAME_PORT_HOST_TX_READY, s);
 }
 
 void NotificationHandler::onQueuePfcDeadlock(

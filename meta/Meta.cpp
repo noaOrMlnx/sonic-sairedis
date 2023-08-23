@@ -6428,22 +6428,26 @@ void Meta::meta_sai_on_port_host_tx_ready_change(
 {
     SWSS_LOG_ENTER();
     SWSS_LOG_ERROR("NOA inside Meta::meta_sai_on_port_host_tx_ready_change function");
-
+    SWSS_LOG_ERROR("NOA before sai_metadata_get_enum_value_name");
     if (!sai_metadata_get_enum_value_name(
             &sai_metadata_enum_sai_port_host_tx_ready_status_t,
             host_tx_ready_status))
     {
         SWSS_LOG_WARN("port host_tx_ready value (%d) not found in sai_port_host_tx_ready_status_t",
                 host_tx_ready_status);
+        SWSS_LOG_ERROR("NOA sai_metadata_get_enum_value_name failed!!!!!!!!!!!");
     }
+    SWSS_LOG_ERROR("NOA after sai_metadata_get_enum_value_name");
 
     auto ot = objectTypeQuery(port_id);
-
+    auto valid = false;
+    
     switch (ot)
     {
         case SAI_OBJECT_TYPE_PORT:
         // case SAI_OBJECT_TYPE_BRIDGE_PORT:
         // case SAI_OBJECT_TYPE_LAG:
+            valid = true;
             break;
 
         default:
@@ -6453,10 +6457,20 @@ void Meta::meta_sai_on_port_host_tx_ready_change(
             break;
     }
 
-    // NOA TODO finish this function
+    if (valid && !m_oids.objectReferenceExists(port_id))
+    {
+        SWSS_LOG_NOTICE("port_id new object spotted %s not present in local DB (snoop!)",
+                sai_serialize_object_id(port_id).c_str());
 
+        sai_object_meta_key_t host_tx_ready_key = { .objecttype = ot, .objectkey = { .key = { .object_id = port_id } } };
+        m_oids.objectReferenceInsert(port_id);
+
+        if (!m_saiObjectCollection.objectExists(host_tx_ready_key))
+        {
+            m_saiObjectCollection.createObject(host_tx_ready_key);
+        }
+    }
 }
-
 
 
 void Meta::meta_sai_on_switch_state_change(

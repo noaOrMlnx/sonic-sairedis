@@ -32,7 +32,7 @@ namespace sairedis
 
             sai_object_id_t m_switchId;
 
-            sai_port_host_tx_ready_status_t *m_portHostTxReadyStatus;
+            sai_port_host_tx_ready_status_t m_portHostTxReadyStatus;
 
     };
 }
