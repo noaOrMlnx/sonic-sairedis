@@ -50,8 +50,8 @@ namespace syncd
                     _In_ const sai_port_oper_status_notification_t *data);
 
             void onPortHostTxReady(
-                    _In_ sai_object_id_t switch_id,
                     _In_ sai_object_id_t port_id,
+                    _In_ sai_object_id_t switch_id,
                     _In_ sai_port_host_tx_ready_status_t host_tx_ready_status);
 
             void onQueuePfcDeadlock(
