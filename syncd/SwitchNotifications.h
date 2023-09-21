@@ -145,7 +145,7 @@ namespace syncd
                     SWSS_LOG_ENTER();
                     SWSS_LOG_ERROR("NOA inside onPortHostTxReady of SwitchNotification");
 
-                    return SlotBase::onPortHostTxReady(context, port_id, switch_id, host_tx_ready_status);
+                    return SlotBase::onPortHostTxReady(context, switch_id, port_id, host_tx_ready_status);
                 }
 
                 static void onBfdSessionStateChange(
