@@ -93,8 +93,8 @@ namespace syncd
                     _In_ sai_bfd_session_state_notification_t *data);
 
             void process_on_port_host_tx_ready_change(
-                    _In_ sai_object_id_t port_id,
                     _In_ sai_object_id_t switch_id,
+                    _In_ sai_object_id_t port_id,
                     _In_ sai_port_host_tx_ready_status_t *host_tx_ready_status);
 
             void process_on_switch_shutdown_request(

@@ -175,8 +175,6 @@ void NotificationHandler::onPortHostTxReady(
 {
     SWSS_LOG_ENTER();
 
-    SWSS_LOG_ERROR("NOA inside OnPortHostTxReadyChange function - callback");
-
     auto s = sai_serialize_port_host_tx_ready_ntf(switch_id, port_id, host_tx_ready_status);
 
     enqueueNotification(SAI_SWITCH_NOTIFICATION_NAME_PORT_HOST_TX_READY, s);

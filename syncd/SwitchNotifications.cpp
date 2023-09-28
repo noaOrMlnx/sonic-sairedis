@@ -74,7 +74,6 @@ void SwitchNotifications::SlotBase::onPortHostTxReady(
         _In_ sai_port_host_tx_ready_status_t host_tx_ready_status)
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA SwitchNotifications::SlotBase::onPortHostTxReady function");
 
     return m_slots.at(context)->m_handler->onPortHostTxReady(switch_id, port_id, host_tx_ready_status);
 }

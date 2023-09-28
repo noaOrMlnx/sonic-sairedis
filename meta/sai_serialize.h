@@ -480,8 +480,8 @@ void sai_deserialize_bfd_session_state_ntf(
 
 void sai_deserialize_port_host_tx_ready_ntf(
         _In_ const std::string& s,
-        _Out_ sai_object_id_t& port_id,
         _Out_ sai_object_id_t& switch_id,
+        _Out_ sai_object_id_t& port_id,
         _Out_ sai_port_host_tx_ready_status_t& host_tx_ready_status);
 
 

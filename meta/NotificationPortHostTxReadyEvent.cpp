@@ -19,19 +19,17 @@ NotificationPortHostTxReady::NotificationPortHostTxReady(
             serializedNotification)
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside NotificationPortHostTxReady constructor");
 
     sai_deserialize_port_host_tx_ready_ntf(
             serializedNotification,
-            m_portId,
             m_switchId,
+            m_portId,
             m_portHostTxReadyStatus);
 }
 
 NotificationPortHostTxReady::~NotificationPortHostTxReady()
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside ~NotificationPortHostTxReady destructor");
 
     sai_deserialize_free_port_host_tx_ready_ntf(m_portHostTxReadyStatus);
 }
@@ -39,12 +37,6 @@ NotificationPortHostTxReady::~NotificationPortHostTxReady()
 sai_object_id_t NotificationPortHostTxReady::getSwitchId() const
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside NotificationPortHostTxReady::getSwitchId function");
-
-    // if (m_switchId == nullptr)
-    // {
-    //     return SAI_NULL_OBJECT_ID;
-    // }
 
     return m_switchId;
 }
@@ -52,13 +44,12 @@ sai_object_id_t NotificationPortHostTxReady::getSwitchId() const
 sai_object_id_t NotificationPortHostTxReady::getAnyObjectId() const
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside NotificationPortHostTxReady::getAnyObjectId function");
 
-    if (m_switchId != SAI_NULL_OBJECT_ID)
-    {
-        SWSS_LOG_ERROR("NOA return m_switchId");
-        return m_switchId;
-    }
+    // if (m_switchId != SAI_NULL_OBJECT_ID)
+    // {
+    //     SWSS_LOG_ERROR("NOA return m_switchId");
+    //     return m_switchId;
+    // }
     if (m_portId != SAI_NULL_OBJECT_ID)
     {
         SWSS_LOG_ERROR("NOA return m_portId");
@@ -73,21 +64,17 @@ void NotificationPortHostTxReady::processMetadata(
         _In_ std::shared_ptr<saimeta::Meta> meta) const
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside NotificationPortHostTxReady::processMetadata function");
 
-    SWSS_LOG_ERROR("NOA before calling meta_sai_on_port_host_tx_ready_change, m_portHostTxReadyStatus = %d", m_portHostTxReadyStatus);
     meta->meta_sai_on_port_host_tx_ready_change(m_portId, m_switchId, m_portHostTxReadyStatus);
-    SWSS_LOG_ERROR("NOA after meta_sai_on_port_host_tx_ready_change, m_portHostTxReadyStatus = %d", m_portHostTxReadyStatus);
 }
 
 void NotificationPortHostTxReady::executeCallback(
         _In_ const sai_switch_notifications_t& switchNotifications) const
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside NotificationPortHostTxReady::executeCallback function");
 
     if (switchNotifications.on_port_host_tx_ready)
     {
-        switchNotifications.on_port_host_tx_ready(m_portId, m_switchId, m_portHostTxReadyStatus);
+        switchNotifications.on_port_host_tx_ready(m_switchId, m_portId, m_portHostTxReadyStatus);
     }
 }

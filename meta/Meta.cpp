@@ -6427,18 +6427,15 @@ void Meta::meta_sai_on_port_host_tx_ready_change(
                     _In_ sai_port_host_tx_ready_status_t host_tx_ready_status)
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA inside Meta::meta_sai_on_port_host_tx_ready_change function");
-    SWSS_LOG_ERROR("NOA before sai_metadata_get_enum_value_name");
+
     if (!sai_metadata_get_enum_value_name(
             &sai_metadata_enum_sai_port_host_tx_ready_status_t,
             host_tx_ready_status))
     {
         SWSS_LOG_WARN("port host_tx_ready value (%d) not found in sai_port_host_tx_ready_status_t",
                 host_tx_ready_status);
-        SWSS_LOG_ERROR("NOA sai_metadata_get_enum_value_name failed!!!!!!!!!!!");
     }
-    SWSS_LOG_ERROR("NOA after sai_metadata_get_enum_value_name");
-
+    
     auto ot = objectTypeQuery(port_id);
     auto valid = false;
     
