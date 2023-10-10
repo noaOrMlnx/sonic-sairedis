@@ -2292,7 +2292,6 @@ std::string sai_serialize_port_host_tx_ready_ntf(
     item["port_id"] = sai_serialize_object_id(port_id);
     item["switch_id"] = sai_serialize_object_id(switch_id);
     item["host_tx_ready_status"] = sai_serialize_port_host_tx_ready_status(host_tx_ready_status);
-    SWSS_LOG_ERROR("NOA after status serialize %s", item["host_tx_ready_status"]);
 
     j.push_back(item);
 

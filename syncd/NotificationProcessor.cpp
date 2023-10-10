@@ -470,16 +470,16 @@ void NotificationProcessor::process_on_port_host_tx_ready_change(
         _In_ sai_port_host_tx_ready_status_t *host_tx_ready_status)
 {
     SWSS_LOG_ENTER();
-    SWSS_LOG_ERROR("NOA before translate from rid to vid - port is is now 0x%lx", port_id);
 
+    SWSS_LOG_DEBUG("Port ID before translating from RID to VID is 0x%lx", port_id);
     sai_object_id_t port_vid = m_translator->translateRidToVid(port_id, SAI_NULL_OBJECT_ID);
-    SWSS_LOG_ERROR("NOA after translate from rid to vid - port vid is now 0x%lx", port_vid);
+    SWSS_LOG_DEBUG("Port ID after translating from RID to VID is 0x%lx", port_vid);
+
     sai_object_id_t switch_vid = m_translator->translateRidToVid(switch_id, SAI_NULL_OBJECT_ID);
-    SWSS_LOG_ERROR("NOA after translate from rid to vid - switch vid is now 0x%lx", switch_vid);
     
     std::string s = sai_serialize_port_host_tx_ready_ntf(switch_vid, port_vid, *host_tx_ready_status);
 
-    SWSS_LOG_ERROR("NOA after sai_serialize inside process_on_port_host_tx_ready_change. s = %s", s.c_str());
+    SWSS_LOG_DEBUG("Host_tx_ready status after sai_serialize is %s", s.c_str());
 
     sendNotification(SAI_SWITCH_NOTIFICATION_NAME_PORT_HOST_TX_READY, s);
 }

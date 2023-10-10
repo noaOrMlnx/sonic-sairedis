@@ -45,17 +45,10 @@ sai_object_id_t NotificationPortHostTxReady::getAnyObjectId() const
 {
     SWSS_LOG_ENTER();
 
-    // if (m_switchId != SAI_NULL_OBJECT_ID)
-    // {
-    //     SWSS_LOG_ERROR("NOA return m_switchId");
-    //     return m_switchId;
-    // }
     if (m_portId != SAI_NULL_OBJECT_ID)
     {
-        SWSS_LOG_ERROR("NOA return m_portId");
         return m_portId;
     }
-    SWSS_LOG_ERROR("NOA return null object id");
     
     return SAI_NULL_OBJECT_ID;
 }
