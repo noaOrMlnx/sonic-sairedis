@@ -329,16 +329,6 @@ config_syncd_mlnx()
 {
     CMD_ARGS+=" -l -p /tmp/sai.profile"
 
-    declare -A DEVICE_DICT=(
-    ["cb84"]="spc1"
-    ["cf6c"]="spc2"
-    ["cf70"]="spc3"
-    ["cf80"]="spc4"
-    ["cf82"]="spc5"
-    ["a2dc"]="bf3"
-    )
-    VENDOR_ID="15b3"
-
     [ -e /dev/sxdevs/sxcdev ] || ( mkdir -p /dev/sxdevs && mknod /dev/sxdevs/sxcdev c 231 193 )
 
     # Read MAC address
@@ -359,18 +349,12 @@ config_syncd_mlnx()
 
     echo >> /tmp/sai-temp.profile
 
-    DEVICE_TYPE=""
-    DEVICE_ID=$(lspci -n | awk -v vid="$VENDOR_ID" '$0 ~ vid {print $NF}' | cut -d: -f2)
-    # Check if DEVICE_ID exists in the DEVICE_DICT
-    if [[ -n "${DEVICE_DICT[$DEVICE_ID]}" ]]; then
-        DEVICE_TYPE="${DEVICE_DICT[$DEVICE_ID]}"
-        ASIC_PROFILE_FILE="sai-${DEVICE_TYPE}.profile"
-
-        ASIC_PROFILE_PATH="/etc/mlnx/${ASIC_PROFILE_FILE}"
-        if [ -f "$ASIC_PROFILE_PATH" ]; then
-            cat "$ASIC_PROFILE_PATH" >> /tmp/sai-temp.profile
-            echo >> /tmp/sai-temp.profile
-        fi
+    DEVICE_TYPE=$(/usr/bin/asic_detect/asic_detect.sh)
+    ASIC_PROFILE_FILE="sai-${DEVICE_TYPE}.profile"
+    ASIC_PROFILE_PATH="/etc/mlnx/${ASIC_PROFILE_FILE}"
+    if [ -f "$ASIC_PROFILE_PATH" ]; then
+        cat "$ASIC_PROFILE_PATH" >> /tmp/sai-temp.profile
+        echo >> /tmp/sai-temp.profile
     fi
 
     if [[ -f $SAI_COMMON_FILE_PATH ]]; then
